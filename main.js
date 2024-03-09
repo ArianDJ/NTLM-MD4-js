@@ -540,3 +540,62 @@
     }
   }
 }(this));
+// Functie om een string naar NTLM-hash om te zetten
+function stringToNTLMHash(str) {
+    const utf16le = str.split('').join('\x00') + '\x00';
+    let hash = md4(utf16le).toUpperCase();
+    return hash;
+}
+
+// Functie om alle mogelijke strings van 1 tot 4 tekens te genereren
+function generateAllPossibleStrings() {
+    const possibleChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+    const strings = [];
+
+    for (let len = 1; len <= 4; len++) {
+        for (let i = 0; i < Math.pow(possibleChars.length, len); i++) {
+            let str = '';
+            let num = i;
+            for (let j = 0; j < len; j++) {
+                str += possibleChars.charAt(num % possibleChars.length);
+                num = Math.floor(num / possibleChars.length);
+            }
+            strings.push(str);
+        }
+    }
+    return strings;
+}
+
+// Functie om NTLM-hash voor elke string te berekenen met een vertraging
+function calculateHashesWithDelay(strings, delay) {
+    return new Promise((resolve, reject) => {
+        const ntlmHashList = [];
+        let index = 0;
+
+        function calculateNextHash() {
+            if (index < strings.length) {
+                const str = strings[index];
+                const ntlmHash = stringToNTLMHash(str);
+                ntlmHashList.push({ ntlmHash, string: str });
+                index++;
+                setTimeout(calculateNextHash, delay);
+            } else {
+                resolve(ntlmHashList);
+            }
+        }
+
+        calculateNextHash();
+    });
+}
+
+// Alle mogelijke strings genereren
+const allPossibleStrings = generateAllPossibleStrings();
+
+// NTLM-hashes voor alle mogelijke strings berekenen met vertraging en printen in de console
+calculateHashesWithDelay(allPossibleStrings, 0.9)
+    .then(ntlmHashList => {
+        console.log(ntlmHashList);
+    })
+    .catch(error => {
+        console.error('Er is een fout opgetreden:', error);
+    });
