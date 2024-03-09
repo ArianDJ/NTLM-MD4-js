@@ -528,7 +528,7 @@
      * // It also supports UTF-8 encoding
      * md4('ä¸­æ–‡'); // 223088bf7bd45a16436b15360c5fc5a0
      *
-     * // It also supports byte `Array`, `Uint8Array`, `ArrayBuffer`
+     *
      * md4([]); // 31d6cfe0d16ae931b73c59d7e0c089c0
      * md4(new Uint8Array([])); // 31d6cfe0d16ae931b73c59d7e0c089c0
      */
